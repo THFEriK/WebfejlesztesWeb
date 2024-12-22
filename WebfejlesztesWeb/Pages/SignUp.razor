@@ -1,0 +1,83 @@
+﻿@page "/signup"
+@using WebfejlesztesWeb.Data
+@using WebfejlesztesWeb.Data.Dto
+@inject AuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>SignUp</PageTitle>
+
+<h1 class="text-center my-4">Sign Up</h1>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <EditForm Model="signUpModel" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+
+                <div class="mb-3">
+                    <label class="form-label">Email:</label>
+                    <InputText @bind-Value="signUpModel.Email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password:</label>
+                    <InputText @bind-Value="signUpModel.Password" type="password" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Name:</label>
+                    <InputText @bind-Value="signUpModel.Name" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number:</label>
+                    <InputText @bind-Value="signUpModel.PhoneNumber" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address:</label>
+                    <InputText @bind-Value="signUpModel.Address" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role:</label>
+                    <InputSelect @bind-Value="signUpModel.Role" class="form-select">
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Gender:</label>
+                    <InputSelect @bind-Value="signUpModel.Gender" class="form-select">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </InputSelect>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private SignUpDto signUpModel = new SignUpDto();
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await AuthenticationService.SignUp(
+            signUpModel.Email,
+            signUpModel.Password,
+            signUpModel.Name,
+            signUpModel.PhoneNumber,
+            signUpModel.Address,
+            signUpModel.Role,
+            signUpModel.Gender
+        );
+
+        if (result != null)
+        {
+            // Handle successful sign-up (e.g., navigate to another page or show a success message)
+            NavigationManager.NavigateTo("/signin");
+        }
+        else
+        {
+            // Handle sign-up failure (e.g., show an error message)
+        }
+    }
+}

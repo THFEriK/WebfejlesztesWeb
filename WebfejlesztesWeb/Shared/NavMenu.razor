@@ -1,0 +1,79 @@
+﻿@using WebfejlesztesWeb.Data
+@inject AuthenticationService AuthenticationService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">WebfejlesztesWeb</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        @if (AuthenticationService.IsAuthenticated)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="charters">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Charters
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <button class="nav-link btn btn-link" @onclick="SignOut">Sign Out</button>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="signup">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Sign Up
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="signin">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Sign In
+                </NavLink>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void OnInitialized()
+    {
+        AuthenticationService.AuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void SignOut()
+    {
+        AuthenticationService.SignOut();
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void OnAuthenticationStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthenticationService.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+    }
+}

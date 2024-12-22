@@ -1,0 +1,52 @@
+﻿@page "/signin"
+@using WebfejlesztesWeb.Data
+@using WebfejlesztesWeb.Data.Dto
+@inject AuthenticationService AuthenticationService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>SignIn</PageTitle>
+
+<h1 class="text-center my-4">Sign In</h1>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <EditForm Model="signInModel" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+
+                <div class="mb-3">
+                    <label class="form-label">Email:</label>
+                    <InputText @bind-Value="signInModel.Email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password:</label>
+                    <InputText @bind-Value="signInModel.Password" type="password" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private SignInDto signInModel = new SignInDto();
+
+    private async Task HandleValidSubmit()
+    {
+        var token = await AuthenticationService.SignIn(
+            signInModel.Email,
+            signInModel.Password
+        );
+
+        if (token != null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            // Handle sign-in failure (e.g., show an error message)
+        }
+    }
+}
